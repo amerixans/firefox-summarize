@@ -21,7 +21,7 @@ document.getElementById('summarize-btn').addEventListener('click', () => {
           apiKeyInput.focus();
         }
       } else {
-        // Replace line breaks with <br> tags
+        // Replace newlines with line breaks
         response.summary = response.summary.replace(/\n/g, '<br/>');
         summaryText.innerHTML = response.summary;
         errorMessage.classList.add('hidden');
