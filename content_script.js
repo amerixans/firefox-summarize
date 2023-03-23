@@ -14,7 +14,6 @@ function extractTextFromNode(node) {
   
   function extractTextFromParagraphs() {
     const paragraphs = document.querySelectorAll('p');
-    console.log('cs 19');
     let text = '';
   
     paragraphs.forEach(paragraph => {
@@ -28,7 +27,6 @@ function extractTextFromNode(node) {
   browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
     if (request.type === 'extractText') {
       const text = extractTextFromParagraphs();
-      console.log("cs35", text)
       sendResponse(text);
     }
   });

@@ -11,9 +11,7 @@ class InvalidApiKeyError extends Error {
 }
 
 // A function to send a request to the GPT API for chat completion
-async function getChatCompletion(prompt) {
-    console.log('bg 7', prompt);
-    
+async function getChatCompletion(prompt) {    
     const requestBody = {
       model: "gpt-3.5-turbo",
       messages: [{ role: "user", content: prompt }],
@@ -32,7 +30,6 @@ async function getChatCompletion(prompt) {
   
     if (response.ok) {
       const data = await response.json();
-      console.log('bg 16', data);
       return data.choices[0].message.content;
     } else {
       console.error('GPT API error details:', await response.json());
@@ -48,7 +45,6 @@ async function getChatCompletion(prompt) {
 browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
   console.log('Received message from', sender.tab ? '[content script]' : '[popup]', 'with type:', request.type);
   if (request.type === 'summarize') {
-    console.log('bg 28');
     // Get the active tab and send a message to the content script to extract text
     browser.tabs.query({ active: true, currentWindow: true })
       .then(tabs => {
@@ -56,7 +52,6 @@ browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
         return browser.tabs.sendMessage(activeTab.id, { type: 'extractText' });
       })
       .then(text => {
-        console.log('bg 38', text);
         if (!text || text.length === 0) {
           throw new Error('No text found on page');
         }
@@ -65,20 +60,17 @@ browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
         return getChatCompletion(prompt);
       })
       .then(summary => {
-        console.log("bg 51", summary);
         sendResponse({ summary })
     })
     .catch(error => sendResponse({ error: error.message, missingApiKey: error instanceof InvalidApiKeyError }));
     return true;
   }
   if (request.type === 'setApiKey') {
-    console.log('setting api key to:', request.apiKey);
     if (request.apiKey.length === 0) {
       sendResponse({ error: 'API key cannot be empty' });
       return true;
     }
     API_KEY = request.apiKey;
-    console.log('API key set to: ', API_KEY);
     sendResponse({ success: true });
     return true;
   }
