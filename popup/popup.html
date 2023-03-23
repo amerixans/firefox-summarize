@@ -8,17 +8,42 @@
   </head>
   <body>
     <h1>Webpage Summarizer</h1>
-    <button id="summarize-btn">Summarize Page</button>
-    <div id="summary-container">
-      <div id="summary">
-        <p id="summary-text"></p>
-      </div>
-      <p id="error-message" class="hidden"></p>
-      <div id="api-key" class="hidden">
-        <input type="text" id="input-api-key" placeholder="Enter API Key">
-        <button id="send-api-key">Send API Key</button>
+    <!-- in the top right corner, include a settings button -->
+    <button id="settings-btn" title="Settings"></button>
+    <div id="settings-container" class="asdf">
+      <div id="font-options">
+        <h2>Font Options</h2>
+        <div id="font-size">
+          <label for="font-size-input">Font Size</label>
+          <input type="range" id="font-size-input" min="8" max="48" step="4" value="16">
+        </div>
+        <div id="font-family">
+          <label for="font-family-input">Font Family</label>
+          <select id="font-family-input">
+            <option value="Arial">Arial</option>
+            <option value="Helvetica">Helvetica</option>
+            <option value="Times New Roman">Times New Roman</option>
+            <option value="Courier New">Courier New</option>
+            <option value="Georgia">Georgia</option>
+            <option value="Trebuchet MS">Trebuchet MS</option>
+          </select>
+        </div>
       </div>
     </div>
+    <div id="main-container">
+      <button id="summarize-btn">Summarize Page</button>
+      <div id="summary-container">
+        <div id="summary">
+          <p id="summary-text"></p>
+        </div>
+        <p id="error-message" class="hidden"></p>
+        <div id="api-key" class="hidden">
+          <input type="text" id="input-api-key" placeholder="Enter API Key">
+          <button id="send-api-key">Send API Key</button>
+        </div>
+      </div>
+    </div>
+
     <script src="popup.js"></script>
   </body>
 </html>
