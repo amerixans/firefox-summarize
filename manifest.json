@@ -25,7 +25,8 @@
     "commands": {
       "_execute_browser_action": {
         "suggested_key": {
-          "default": "Ctrl+Shift+Y"
+          "default": "Ctrl+Shift+Y",
+          "mac": "MacCtrl+Shift+Y"
         },
         "description": "Summarize webpage"
       }
