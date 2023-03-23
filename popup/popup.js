@@ -1,3 +1,18 @@
+// Formats the output of any returned text from the background script
+function formatText(text) {
+  const paragraphs = text.split('\n')
+    // Filter out paragraphs that are just whitespace
+    .filter(p => p.trim().length > 0)
+    // Prevent any HTML injection
+    .map(p => p.replace(/</g, '&lt;').replace(/>/g, '&gt;'))
+    // // Wrap each paragraph in <p> tags
+    // .map(p => `<p>${p}</p>`)
+    // Join the paragraphs together with line breaks
+    .join('<br/>');
+
+  return paragraphs;
+}
+
 // Add a listener for the summarize message from the background script
 document.getElementById('summarize-btn').addEventListener('click', () => {
   const summaryText = document.getElementById('summary-text');
@@ -5,7 +20,7 @@ document.getElementById('summarize-btn').addEventListener('click', () => {
   const apiKeyDiv = document.getElementById('api-key');
   const apiKeyInput = document.getElementById('input-api-key');
 
-  summaryText.innerHTML = 'Summarizing...';
+  summaryText.innerHTML = 'Generating...';
   errorMessage.classList.add('hidden');
 
   // Send a message to the background script to start summarization
@@ -21,9 +36,36 @@ document.getElementById('summarize-btn').addEventListener('click', () => {
           apiKeyInput.focus();
         }
       } else {
-        // Replace newlines with line breaks
-        response.summary = response.summary.replace(/\n/g, '<br/>');
-        summaryText.innerHTML = response.summary;
+        summaryText.innerHTML = formatText(response.summary);
+        errorMessage.classList.add('hidden');
+      }
+    });
+});
+
+// Add a listener for the fun facts message from the background script
+document.getElementById('fun-facts-btn').addEventListener('click', () => {
+  const summaryText = document.getElementById('summary-text');
+  const errorMessage = document.getElementById('error-message');
+  const apiKeyDiv = document.getElementById('api-key');
+  const apiKeyInput = document.getElementById('input-api-key');
+
+  summaryText.innerHTML = 'Generating...';
+  errorMessage.classList.add('hidden');
+
+  // Send a message to the background script to get fun facts
+  browser.runtime.sendMessage({ type: 'fun-facts' })
+    .then(response => {
+      if (response.error) {
+        summaryText.innerHTML = '';
+        errorMessage.textContent = `Error: ${response.error}`;
+        errorMessage.classList.remove('hidden');
+        if (response.missingApiKey) {
+          errorMessage.classList.remove('hidden');
+          apiKeyDiv.classList.remove('hidden');
+          apiKeyInput.focus();
+        }
+      } else {
+        summaryText.innerHTML = formatText(response.facts);
         errorMessage.classList.add('hidden');
       }
     });
