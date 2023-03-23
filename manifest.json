@@ -28,7 +28,7 @@
           "default": "Ctrl+Shift+Y",
           "mac": "MacCtrl+Shift+Y"
         },
-        "description": "Summarize webpage"
+        "description": "Toggle webpage summarizer"
       }
     }
   }
