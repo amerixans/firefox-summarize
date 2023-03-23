@@ -1,6 +1,14 @@
 // Replace with your own API key and GPT service endpoint
-const API_KEY = 'API-KEY';
+var API_KEY = 'API-KEY';
 const GPT_API_ENDPOINT = 'https://api.openai.com/v1/chat/completions';
+
+// Create an error type for an invalid API key
+class InvalidApiKeyError extends Error {
+  constructor(message) {
+    super(message);
+    this.name = 'InvalidApiKeyError';
+  }
+}
 
 // A function to send a request to the GPT API for chat completion
 async function getChatCompletion(prompt) {
@@ -28,12 +36,17 @@ async function getChatCompletion(prompt) {
       return data.choices[0].message.content;
     } else {
       console.error('GPT API error details:', await response.json());
+      // If the response contains "Unauthorized" then the API key is invalid
+      if (response.statusText.toLowerCase().includes('unauthorized')) {
+        throw new InvalidApiKeyError('Invalid API key');
+      }
       throw new Error(`GPT API error: ${response.statusText}`);
     }
   }
 
 // Listen for messages from popup.js and content_script.js
 browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
+  console.log('Received message from', sender.tab ? '[content script]' : '[popup]', 'with type:', request.type);
   if (request.type === 'summarize') {
     console.log('bg 28');
     // Get the active tab and send a message to the content script to extract text
@@ -48,14 +61,25 @@ browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
           throw new Error('No text found on page');
         }
         const first1000Words = text.split(' ').slice(0, 1000).join(' ');
-        const prompt = 'Return the 3 most interesting (fun) facts from the following article: """' + first1000Words + '..."""';
+        const prompt = 'Return the 3 most interesting (fun) facts from the following article:\n\n"""' + first1000Words + '..."""';
         return getChatCompletion(prompt);
       })
       .then(summary => {
         console.log("bg 51", summary);
         sendResponse({ summary })
     })
-      .catch(error => sendResponse({ error: error.message }));
+    .catch(error => sendResponse({ error: error.message, missingApiKey: error instanceof InvalidApiKeyError }));
+    return true;
+  }
+  if (request.type === 'setApiKey') {
+    console.log('setting api key to:', request.apiKey);
+    if (request.apiKey.length === 0) {
+      sendResponse({ error: 'API key cannot be empty' });
+      return true;
+    }
+    API_KEY = request.apiKey;
+    console.log('API key set to: ', API_KEY);
+    sendResponse({ success: true });
     return true;
   }
 });
