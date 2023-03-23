@@ -21,6 +21,14 @@
         "48": "icons/icon-48.png"
       },
       "default_popup": "popup/popup.html"
+    },
+    "commands": {
+      "_execute_browser_action": {
+        "suggested_key": {
+          "default": "Ctrl+Shift+Y"
+        },
+        "description": "Summarize webpage"
+      }
     }
   }
   
