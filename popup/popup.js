@@ -21,7 +21,7 @@ document.getElementById('summarize-btn').addEventListener('click', () => {
           apiKeyInput.focus();
         }
       } else {
-        // Replace line breaks with <br> tags
+        // Replace newlines with line breaks
         response.summary = response.summary.replace(/\n/g, '<br/>');
         summaryText.innerHTML = response.summary;
         errorMessage.classList.add('hidden');
@@ -50,4 +50,45 @@ document.getElementById('send-api-key').addEventListener('click', () => {
         summaryText.innerHTML = 'API key set successfully!';
       }
     });
+});
+
+// Add a listener for the settings button
+document.getElementById('settings-btn').addEventListener('click', () => {
+  const settingsDiv = document.getElementById('settings');
+  const mainDiv = document.getElementById('main-container');
+
+  if (settingsDiv.classList.contains('hidden')) {
+    settingsDiv.classList.remove('hidden');
+    mainDiv.classList.add('hidden');
+  }
+  else {
+    settingsDiv.classList.add('hidden');
+    mainDiv.classList.remove('hidden');
+  }
+});
+
+// Add a listener for changes to the font family
+document.getElementById('font-family-input').addEventListener('change', (event) => {
+  // Change the font family for the body
+  document.body.style.fontFamily = event.target.value;
+  browser.storage.local.set({ fontFamily: event.target.value });
+});
+
+// Add a listener for changes to the font size
+document.getElementById('font-size-input').addEventListener('change', (event) => {
+  // Change the font size for the body
+  document.body.style.fontSize = event.target.value + 'pt';
+  browser.storage.local.set({ fontSize: event.target.value });
+});
+
+// Get the font settings from storage and apply them
+browser.storage.local.get(['fontSize', 'fontFamily']).then((result) => {
+  if (result.fontSize) {
+    document.body.style.fontSize = result.fontSize + 'pt';
+    document.getElementById('font-size-input').value = result.fontSize;
+  }
+  if (result.fontFamily) {
+    document.body.style.fontFamily = result.fontFamily;
+    document.getElementById('font-family-input').value = result.fontFamily;
+  }
 });
